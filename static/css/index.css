@@ -1,0 +1,8 @@
+.container_index {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 100px;
+}

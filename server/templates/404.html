@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Not found</title>
+    <style>
+        html, body, p, h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .info-handler {
+            margin-bottom: 20px;
+        }
+        
+        .block-url {
+            margin-bottom: 10px;
+        }
+        
+        .list_urls_text {
+            font-size: 22px;
+            margin-left: 40px;
+        }
+        
+        .url {
+            font-size: 20px;
+        }
+        
+        a:active,
+        a:hover,
+        a {
+            text-decoration: none;
+            cursor: pointer;
+            color: black;
+        }
+        
+        .span-url {
+            margin-right: 20px;
+        }
+        
+        .header-error {
+            background: #ffc;
+            padding: 30px 15px;
+        }
+        
+        .info {
+            background: #f6f6f6;
+            padding: 30px 70px;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
+        }
+    
+    
+    </style>
+</head>
+<body>
+<div class="content-error">
+    <div class="header-error">
+        <div class="info-handler">
+            <h1>Извините, данной страницы не найдено (404)</h1>
+        </div>
+        <div>
+            <p class="list_urls_text">Выберите из списка следующую: </p>
+        </div>
+    </div>
+    
+    
+    <div class="info">
+        {% for item in urlpatterns %}
+        <div class="block-url">
+            <p class="url">
+                <span class="span-url">{{ loop.index }}.</span>
+                <a href="/{{ item.0 }}">/{{ item.0 }}</a>
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

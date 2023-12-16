@@ -1,5 +1,4 @@
 from sys import argv
-
 from server.start import execute_command
 
 

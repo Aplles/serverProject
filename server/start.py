@@ -1,7 +1,7 @@
-from server.socket_server import start
+from server.socket_server import Server
 
 COMMANDS = {
-    "runserver": start
+    "runserver": Server().process
 }
 
 

@@ -1,4 +1,6 @@
-import signal
+import sys
+from functools import partial
+
 import keyboard
 import socket
 from datetime import datetime
@@ -9,29 +11,31 @@ from urls import urlpatterns
 from .routing import render
 
 
-
-def on_ctrl_s():
-    print("Ctrl + S pressed")
-
-keyboard.add_hotkey('ctrl+c', on_ctrl_s)
-
 class Server:
 
     def __init__(self):
-        self.shutdown_requested = False
+        self.server = self.connect()
         self.process()
 
-    def process(self):
+    @staticmethod
+    def connect():
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((localhost, port))
         server.listen(5)
         print(f"Starting development server at http://{localhost}:{port}/\nQuit the server with CTRL-BREAK.")
+        return server
 
-        signal.signal(signal.SIGINT, self.shutdown_handler)
+    def disconnect(self):
+        print("Server is shutting down...")
+        keyboard.unhook_all()
+        self.server.close()
 
+    def process(self):
+        keyboard.add_hotkey('ctrl+c', partial(self.close, self))
+        keyboard.add_hotkey('ctrl+s', partial(self.reboot, self))
         try:
-            while not self.shutdown_requested:
-                client_socket, address = server.accept()
+            while True:
+                client_socket, address = self.server.accept()
                 data = client_socket.recv(1024).decode('utf-8')
                 response, code = self.routing(data)
                 print(
@@ -40,13 +44,8 @@ class Server:
                 client_socket.send(response)
                 client_socket.shutdown(socket.SHUT_WR)
                 keyboard.wait()
-        finally:
-            print("Server is shutting down...")
-            keyboard.unhook_all()
-            server.close()
-
-    def shutdown_handler(self, signum, frame):
-        self.shutdown_requested = True
+        except OSError:
+            ...
 
     def routing(self, request: str):
         if request.split()[1].startswith('/static/'):
@@ -71,6 +70,13 @@ class Server:
             'urlpatterns': urlpatterns
         })
         return headers_404 + template.encode('utf-8'), 404
+
+    def reboot(self, server_instance):
+        self.server.close()
+        self.server = self.connect()
+
+    def close(self, server_instance):
+        self.disconnect()
 
 # server_client = Server()
 # server_client.process()
